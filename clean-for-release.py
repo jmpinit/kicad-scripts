@@ -122,7 +122,11 @@ def loadBoard(bomFilePath, cplFilePath):
     header = bomContents[0]
     expectedHeader = ['Component', 'Description', 'References', 'Quantity Per PCB', 'Vendor', 'Mfg', 'Vendor Part #', 'Mfg Part #']
 
-    assert len(header) == len(expectedHeader), 'Unexpected # of columns in BOM'
+    if len(header) > len(expectedHeader):
+        assert False, 'Unexpected extra columns: {}'.format([item for item in header if item not in expectedHeader])
+    elif len(header) < len(expectedHeader):
+        assert False, 'Missing columns: {}'.format([item for item in expectedHeader if item not in header])
+
     assert all(column in expectedHeader for column in header), 'Unexpected column in header'
 
     indexOfFirstEmpty = bomContents.index(next(row for row in bomContents[1:] if len(row) == 0))
